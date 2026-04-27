@@ -1,27 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifySessionToken } from '@/lib/auth'
+import { verifyToken } from '@/lib/jwt'
 
-const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/logout', '/_next', '/favicon']
-const CHANGE_PW_PATHS = ['/change-password', '/api/auth/change-password', '/api/auth/me', '/api/auth/logout']
+// Pfade die ohne Login erreichbar sind
+const PUBLIC = ['/login', '/api/auth/login', '/api/auth/logout', '/api/auth/me']
+
+// Pfade die trotz Passwort-Pflicht erlaubt sind
+const ALLOW_CHANGE_PW = ['/change-password', '/api/auth/change-password', '/api/auth/logout', '/api/auth/me']
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // Öffentliche Pfade immer erlauben
-  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+  if (PUBLIC.some((p) => pathname.startsWith(p))) {
     return NextResponse.next()
   }
 
   const token = req.cookies.get('session')?.value
-  const session = token ? await verifySessionToken(token) : null
+  const session = token ? await verifyToken(token) : null
 
-  // Nicht eingeloggt → Login
   if (!session) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  // Muss Passwort ändern → nur /change-password und zugehörige APIs erlauben
-  if (session.mustChangePassword && !CHANGE_PW_PATHS.some((p) => pathname.startsWith(p))) {
+  if (session.mustChangePassword && !ALLOW_CHANGE_PW.some((p) => pathname.startsWith(p))) {
     return NextResponse.redirect(new URL('/change-password', req.url))
   }
 
