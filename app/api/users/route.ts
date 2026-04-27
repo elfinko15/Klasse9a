@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
     .from('users')
     .insert({
       name: name.trim(),
+      must_change_password: true,
       username: cleanUsername,
       password_hash,
       role: role === 'admin' ? 'admin' : 'student',

@@ -35,6 +35,8 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Fehler beim Login.");
+      } else if (data.mustChangePassword) {
+        router.replace("/change-password");
       } else {
         router.replace("/schueler");
       }

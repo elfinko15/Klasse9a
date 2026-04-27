@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
   const { data: user, error } = await db
     .from('users')
-    .select('id, name, username, password_hash, role')
+    .select('id, name, username, password_hash, role, must_change_password')
     .eq('username', username.trim().toLowerCase())
     .single()
 
@@ -25,22 +25,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Benutzername oder Passwort falsch.' }, { status: 401 })
   }
 
+  const mustChangePassword = user.must_change_password === true
+
   const token = await createSessionToken({
     userId: user.id,
     role: user.role,
     name: user.name,
     username: user.username,
+    mustChangePassword,
   })
 
   const res = NextResponse.json({
     ok: true,
+    mustChangePassword,
     user: { id: user.id, name: user.name, username: user.username, role: user.role },
   })
 
   res.cookies.set('session', token, {
     httpOnly: true,
     sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 Tage
+    maxAge: 60 * 60 * 24 * 7,
     path: '/',
     secure: process.env.NODE_ENV === 'production',
   })

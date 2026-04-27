@@ -6,6 +6,7 @@ export type SessionUser = {
   role: 'admin' | 'student'
   name: string
   username: string
+  mustChangePassword: boolean
 }
 
 function getSecret() {
