@@ -46,13 +46,13 @@ export default function NavBar() {
         <div className="flex items-center gap-1">
           <Link
             href="/schueler"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-colors ${
               pathname === "/schueler"
                 ? "text-white bg-white/10"
                 : "text-white/50 hover:text-white/80 hover:bg-white/5"
             }`}
           >
-            <Users size={15} />
+            <Users size={17} />
             <span className="hidden sm:inline">Schüler</span>
           </Link>
 

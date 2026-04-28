@@ -132,63 +132,62 @@ export default function StudentPage() {
         </button>
 
         {/* Profile header */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-8">
-          <div className="relative flex-shrink-0">
-            {student.profile_picture_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={student.profile_picture_url}
-                alt={student.name}
-                className="w-24 h-24 rounded-2xl object-cover"
-                style={{ boxShadow: "0 8px 30px rgba(124,58,237,0.3)" }}
-              />
-            ) : (
-              <div className="relative">
-                <Avatar name={student.name} size={96} className="rounded-2xl" />
-                <div
-                  className="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-xl flex items-center justify-center"
-                  style={{ background: "rgba(10,10,26,0.9)", border: "1px solid rgba(124,58,237,0.3)" }}
-                  title="Kein Foto hinterlegt"
-                >
-                  <ImageIcon size={13} className="text-violet-400/60" />
+        <div
+          className="rounded-2xl p-4 sm:p-5 mb-6"
+          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+        >
+          <div className="flex items-start gap-4">
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
+              {student.profile_picture_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={student.profile_picture_url} alt={student.name}
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover"
+                  style={{ boxShadow: "0 6px 24px rgba(124,58,237,0.3)" }} />
+              ) : (
+                <div className="relative">
+                  <Avatar name={student.name} size={window?.innerWidth < 640 ? 60 : 80} className="rounded-2xl" />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg flex items-center justify-center"
+                    style={{ background: "rgba(10,10,26,0.9)", border: "1px solid rgba(124,58,237,0.3)" }}>
+                    <ImageIcon size={11} className="text-violet-400/60" />
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-
-          <div className="text-center sm:text-left">
-            <div className="flex items-center gap-2 justify-center sm:justify-start mb-1">
-              <h1 className="text-3xl font-black text-white">{student.name}</h1>
-              {student.role === "admin" && (
-                <span
-                  className="text-xs px-2 py-0.5 rounded-lg font-medium"
-                  style={{ background: "rgba(124,58,237,0.2)", color: "#a78bfa", border: "1px solid rgba(124,58,237,0.3)" }}
-                >
-                  Admin
-                </span>
               )}
             </div>
-            <p className="text-white/40 text-sm mb-2">@{student.username}</p>
-            {student.bio && <p className="text-white/60 text-sm max-w-md">{student.bio}</p>}
-            <div className="flex items-center gap-3 mt-3 justify-center sm:justify-start">
-              <span className="text-white/30 text-xs flex items-center gap-1">
-                <MessageCircle size={11} />
-                {comments.length} {comments.length === 1 ? "Nachricht" : "Nachrichten"}
-              </span>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">{student.name}</h1>
+                    {student.role === "admin" && (
+                      <span className="text-xs px-1.5 py-0.5 rounded-md font-medium flex-shrink-0"
+                        style={{ background: "rgba(124,58,237,0.2)", color: "#a78bfa", border: "1px solid rgba(124,58,237,0.3)" }}>
+                        Admin
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-white/40 text-xs mt-0.5">@{student.username}</p>
+                  {student.bio && <p className="text-white/55 text-sm mt-1 leading-relaxed">{student.bio}</p>}
+                  <p className="text-white/25 text-xs mt-1.5 flex items-center gap-1">
+                    <MessageCircle size={10} />
+                    {comments.length} {comments.length === 1 ? "Nachricht" : "Nachrichten"}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Write message button */}
-          <div className="sm:ml-auto flex-shrink-0">
-            <button
-              onClick={() => { setFormOpen(true); setTimeout(() => textareaRef.current?.focus(), 50); }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-[1.04]"
-              style={{ background: "linear-gradient(135deg, #7c3aed, #ec4899)" }}
-            >
-              <Send size={15} />
-              Nachricht schreiben
-            </button>
-          </div>
+          {/* Write button – full width on mobile */}
+          <button
+            onClick={() => { setFormOpen(true); setTimeout(() => textareaRef.current?.focus(), 80); }}
+            className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm text-white transition-all active:scale-95"
+            style={{ background: "linear-gradient(135deg, #7c3aed, #ec4899)" }}
+          >
+            <Send size={15} />
+            Nachricht an {student.name.split(" ")[0]} schreiben
+          </button>
         </div>
 
         {/* Section title */}
@@ -209,30 +208,33 @@ export default function StudentPage() {
       {/* Write message modal */}
       {formOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
-          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }}
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4"
+          style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }}
           onClick={(e) => e.target === e.currentTarget && setFormOpen(false)}
         >
           <div
-            className="w-full max-w-lg rounded-3xl p-6 scale-in"
+            className="w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 scale-in"
             style={{
-              background: "rgba(12,8,30,0.97)",
+              background: "rgba(12,8,30,0.98)",
               border: "1px solid rgba(124,58,237,0.3)",
-              boxShadow: "0 20px 60px rgba(124,58,237,0.2)",
+              borderBottom: "none",
+              boxShadow: "0 -8px 40px rgba(124,58,237,0.15)",
+              paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))",
             }}
           >
+            {/* Drag handle on mobile */}
+            <div className="flex justify-center mb-4 sm:hidden">
+              <div className="w-10 h-1 rounded-full bg-white/20" />
+            </div>
+
             <div className="flex items-center gap-3 mb-4">
-              <Avatar name={student.name} size={36} className="rounded-xl" />
+              <Avatar name={student.name} size={34} className="rounded-xl" />
               <div>
                 <p className="text-white/80 text-sm font-semibold">Nachricht an {student.name}</p>
-                {session && (
-                  <p className="text-white/35 text-xs">als {session.name}</p>
-                )}
+                {session && <p className="text-white/35 text-xs">als {session.name}</p>}
               </div>
-              <button
-                onClick={() => setFormOpen(false)}
-                className="ml-auto text-white/30 hover:text-white/60 transition-colors"
-              >
+              <button onClick={() => setFormOpen(false)}
+                className="ml-auto text-white/30 hover:text-white/60 transition-colors p-1">
                 ✕
               </button>
             </div>
@@ -243,7 +245,7 @@ export default function StudentPage() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={`Was möchtest du ${student.name} sagen? 💜`}
-                rows={5}
+                rows={4}
                 maxLength={1000}
                 className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder-white/25 outline-none resize-none transition-all"
                 style={{
