@@ -74,7 +74,7 @@ export default function LoginPage() {
           <div className="text-5xl mb-4 inline-block" style={{ animation: "float 5s ease-in-out infinite" }}>
             🌟
           </div>
-          <h1 className="text-3xl font-black gradient-text">Kommentarseite</h1>
+          <h1 className="text-3xl font-black gradient-text">Klasse 9a</h1>
           <p className="text-white/40 text-sm mt-2">Melde dich an, um Nachrichten zu lesen und zu schreiben.</p>
         </div>
 

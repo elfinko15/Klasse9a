@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Send, ArrowLeft, ImageIcon, MessageCircle } from "lucide-react";
+import { Send, ArrowLeft, ImageIcon, MessageCircle, Camera, Trash2 } from "lucide-react";
 import StarField from "@/components/StarField";
 import NavBar from "@/components/NavBar";
 import Avatar from "@/components/Avatar";
@@ -39,7 +39,9 @@ export default function StudentPage() {
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -50,6 +52,17 @@ export default function StudentPage() {
         loadData();
       });
   }, [id, router]);
+
+  // Auto-refresh comments every 5 seconds
+  useEffect(() => {
+    if (!session) return;
+    const interval = setInterval(() => {
+      fetch(`/api/comments/${id}`)
+        .then((r) => r.json())
+        .then((d) => { if (d.comments) setComments(d.comments); });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [id, session]);
 
   async function loadData() {
     const [userRes, commentsRes] = await Promise.all([
@@ -95,6 +108,33 @@ export default function StudentPage() {
     if (res.ok) setComments((prev) => prev.filter((c) => c.id !== commentId));
   }
 
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const form = new FormData();
+    form.append("file", file);
+    try {
+      const res = await fetch(`/api/users/${id}/avatar`, { method: "POST", body: form });
+      if (res.ok) {
+        const data = await res.json();
+        setStudent((prev) => prev ? { ...prev, profile_picture_url: data.url } : prev);
+      }
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
+  async function handleAvatarDelete() {
+    if (!confirm("Profilbild wirklich löschen?")) return;
+    const res = await fetch(`/api/users/${id}/avatar`, { method: "DELETE" });
+    if (res.ok) setStudent((prev) => prev ? { ...prev, profile_picture_url: null } : prev);
+  }
+
+  const canEditAvatar = session?.userId === id || session?.role === "admin";
+  const canDeleteAvatar = (session?.role === "admin" || session?.userId === id) && !!student?.profile_picture_url;
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "#0a0a1a" }}>
@@ -137,22 +177,40 @@ export default function StudentPage() {
           style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
         >
           <div className="flex items-start gap-4">
-            {/* Avatar */}
+            {/* Avatar with upload overlay */}
             <div className="relative flex-shrink-0">
-              {student.profile_picture_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={student.profile_picture_url} alt={student.name}
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover"
-                  style={{ boxShadow: "0 6px 24px rgba(124,58,237,0.3)" }} />
-              ) : (
-                <div className="relative">
-                  <Avatar name={student.name} size={window?.innerWidth < 640 ? 60 : 80} className="rounded-2xl" />
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg flex items-center justify-center"
-                    style={{ background: "rgba(10,10,26,0.9)", border: "1px solid rgba(124,58,237,0.3)" }}>
-                    <ImageIcon size={11} className="text-violet-400/60" />
-                  </div>
+              <Avatar
+                name={student.name}
+                profilePictureUrl={student.profile_picture_url}
+                size={window?.innerWidth < 640 ? 60 : 80}
+                className="rounded-2xl"
+              />
+              {canEditAvatar && (
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="absolute inset-0 rounded-2xl flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity"
+                  title="Profilbild ändern"
+                >
+                  {uploading
+                    ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    : <Camera size={20} className="text-white" />
+                  }
+                </button>
+              )}
+              {!student.profile_picture_url && !canEditAvatar && (
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg flex items-center justify-center"
+                  style={{ background: "rgba(10,10,26,0.9)", border: "1px solid rgba(124,58,237,0.3)" }}>
+                  <ImageIcon size={11} className="text-violet-400/60" />
                 </div>
               )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
             </div>
 
             {/* Info */}
@@ -175,11 +233,28 @@ export default function StudentPage() {
                     {comments.length} {comments.length === 1 ? "Nachricht" : "Nachrichten"}
                   </p>
                 </div>
+
+                {/* Admin avatar delete */}
+                {canDeleteAvatar && (
+                  <button
+                    onClick={handleAvatarDelete}
+                    className="flex-shrink-0 p-1.5 rounded-lg text-red-400/40 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                    title="Profilbild löschen"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Write button – full width on mobile */}
+          {canEditAvatar && (
+            <p className="text-white/25 text-xs mt-3 text-center">
+              Klicke auf dein Bild, um es zu ändern
+            </p>
+          )}
+
+          {/* Write button */}
           <button
             onClick={() => { setFormOpen(true); setTimeout(() => textareaRef.current?.focus(), 80); }}
             className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm text-white transition-all active:scale-95"
@@ -222,7 +297,6 @@ export default function StudentPage() {
               paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))",
             }}
           >
-            {/* Drag handle on mobile */}
             <div className="flex justify-center mb-4 sm:hidden">
               <div className="w-10 h-1 rounded-full bg-white/20" />
             </div>

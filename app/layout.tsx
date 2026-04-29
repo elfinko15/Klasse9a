@@ -5,11 +5,11 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 
 export const metadata: Metadata = {
-  title: "Auf Wiedersehen 💫 – Wir vermissen euch!",
-  description: "Eine Kommentarseite zum Abschied unserer Mitschüler.",
+  title: "Klasse 9a",
+  description: "Die Kommentarseite der Klasse 9a.",
   openGraph: {
-    title: "Auf Wiedersehen 💫 – Wir vermissen euch!",
-    description: "Hinterlasse einen Kommentar für unsere scheidenden Mitschüler.",
+    title: "Klasse 9a",
+    description: "Hinterlasse eine Nachricht für deine Mitschüler.",
   },
 };
 

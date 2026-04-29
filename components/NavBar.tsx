@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Users, Shield, LogOut, Sparkles, ChevronDown } from "lucide-react";
+import { Users, Shield, LogOut, Sparkles, ChevronDown, BarChart2 } from "lucide-react";
 import Avatar from "@/components/Avatar";
 import type { SessionUser } from "@/lib/auth";
 
@@ -39,7 +39,7 @@ export default function NavBar() {
           className="flex items-center gap-2 text-white/80 hover:text-white transition-colors font-semibold text-sm"
         >
           <Sparkles size={16} className="text-violet-400" />
-          Kommentarseite
+          Klasse 9a
         </Link>
 
         {/* Nav links */}
@@ -54,6 +54,18 @@ export default function NavBar() {
           >
             <Users size={17} />
             <span className="hidden sm:inline">Schüler</span>
+          </Link>
+
+          <Link
+            href="/umfragen"
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+              pathname === "/umfragen"
+                ? "text-white bg-white/10"
+                : "text-white/50 hover:text-white/80 hover:bg-white/5"
+            }`}
+          >
+            <BarChart2 size={16} />
+            <span className="hidden sm:inline">Umfragen</span>
           </Link>
 
           {user?.role === "admin" && (
