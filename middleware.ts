@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/jwt'
 const PUBLIC = ['/login', '/api/auth/login', '/api/auth/logout', '/api/auth/me']
 
 // Pfade die trotz Passwort-Pflicht erlaubt sind
-const ALLOW_CHANGE_PW = ['/change-password', '/api/auth/change-password', '/api/auth/logout', '/api/auth/me']
+const ALLOW_CHANGE_PW = ['/change-password', '/api/auth/change-password', '/api/auth/logout', '/api/auth/me', '/ladescreen']
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl

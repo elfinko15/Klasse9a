@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Shield, UserPlus, Trash2, Users, RefreshCw, ChevronRight, X, Key, Copy, Check } from "lucide-react";
+import { Shield, UserPlus, Trash2, Users, RefreshCw, ChevronRight, X, Key, Copy, Check, KeyRound } from "lucide-react";
 import StarField from "@/components/StarField";
 import NavBar from "@/components/NavBar";
 import Avatar from "@/components/Avatar";
@@ -34,6 +34,8 @@ export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [resettingId, setResettingId] = useState<string | null>(null);
+  const [resetDoneId, setResetDoneId] = useState<string | null>(null);
 
   // New user form
   const [showForm, setShowForm] = useState(false);
@@ -92,6 +94,17 @@ export default function AdminPage() {
     } finally {
       setCreating(false);
     }
+  }
+
+  async function handleResetPassword(userId: string, userName: string) {
+    if (!confirm(`Passwort von ${userName} auf "Schule123" zurücksetzen?`)) return;
+    setResettingId(userId);
+    const res = await fetch(`/api/admin/users/${userId}/reset-password`, { method: "POST" });
+    if (res.ok) {
+      setResetDoneId(userId);
+      setTimeout(() => setResetDoneId(null), 3000);
+    }
+    setResettingId(null);
   }
 
   async function handleDelete(userId: string, userName: string) {
@@ -266,6 +279,23 @@ export default function AdminPage() {
                     >
                       <ChevronRight size={16} />
                     </a>
+                    <button
+                      onClick={() => handleResetPassword(u.id, u.name)}
+                      disabled={resettingId === u.id}
+                      className="transition-colors p-1.5 rounded-lg disabled:opacity-30"
+                      style={{ color: resetDoneId === u.id ? "#34d399" : "rgba(251,191,36,0.5)" }}
+                      title='Passwort auf "Schule123" zurücksetzen'
+                      onMouseEnter={(e) => (e.currentTarget.style.color = resetDoneId === u.id ? "#34d399" : "#fbbf24")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = resetDoneId === u.id ? "#34d399" : "rgba(251,191,36,0.5)")}
+                    >
+                      {resettingId === u.id ? (
+                        <div className="w-4 h-4 border border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+                      ) : resetDoneId === u.id ? (
+                        <Check size={16} />
+                      ) : (
+                        <KeyRound size={16} />
+                      )}
+                    </button>
                     <button
                       onClick={() => handleDelete(u.id, u.name)}
                       disabled={deletingId === u.id}

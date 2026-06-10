@@ -41,7 +41,7 @@ export default function ChangePasswordPage() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Fehler."); }
-      else { router.replace("/schueler"); }
+      else { router.replace("/ladescreen"); }
     } catch {
       setError("Netzwerkfehler.");
     } finally {

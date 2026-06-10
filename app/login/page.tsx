@@ -38,7 +38,7 @@ export default function LoginPage() {
       } else if (data.mustChangePassword) {
         router.replace("/change-password");
       } else {
-        router.replace("/schueler");
+        router.replace("/ladescreen");
       }
     } catch {
       setError("Netzwerkfehler. Bitte versuche es nochmal.");
