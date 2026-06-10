@@ -1,5 +1,7 @@
+export const runtime = 'nodejs'
+
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { db } from '@/lib/supabase'
 import bcrypt from 'bcryptjs'
 
 const SECRET = 'klasse9a-reset-2026'
@@ -9,11 +11,6 @@ export async function GET(req: Request) {
   if (searchParams.get('key') !== SECRET) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 })
   }
-
-  const db = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
 
   const hash = await bcrypt.hash('Schule123', 10)
   const { error } = await db
