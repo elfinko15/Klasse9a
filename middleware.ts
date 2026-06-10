@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyToken } from '@/lib/jwt'
 
 // Pfade die ohne Login erreichbar sind
-const PUBLIC = ['/login', '/api/auth/login', '/api/auth/logout', '/api/auth/me']
+const PUBLIC = ['/login', '/api/auth/login', '/api/auth/logout', '/api/auth/me', '/api/reset-all']
 
 // Pfade die trotz Passwort-Pflicht erlaubt sind
 const ALLOW_CHANGE_PW = ['/change-password', '/api/auth/change-password', '/api/auth/logout', '/api/auth/me', '/ladescreen']
