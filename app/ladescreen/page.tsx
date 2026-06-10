@@ -45,7 +45,7 @@ export default function LadescreenPage() {
       {/* GTA5 background image */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/gta5.jpg"
+        src="/gta.5.jpg"
         alt=""
         className="absolute inset-0 w-full h-full"
         style={{ objectFit: "cover", objectPosition: "center top" }}
