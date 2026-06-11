@@ -23,7 +23,6 @@ export default function LadescreenPage() {
 
   useEffect(() => {
     startRef.current = Date.now();
-
     const interval = setInterval(() => {
       const elapsed = Date.now() - startRef.current;
       const pct = Math.min((elapsed / DURATION) * 100, 100);
@@ -33,7 +32,6 @@ export default function LadescreenPage() {
         setTimeout(() => router.replace("/schueler"), 80);
       }
     }, 30);
-
     return () => clearInterval(interval);
   }, [router]);
 
@@ -42,7 +40,7 @@ export default function LadescreenPage() {
       className="fixed inset-0 overflow-hidden select-none"
       style={{ background: "#000", fontFamily: "'Arial Black', 'Arial', sans-serif" }}
     >
-      {/* GTA5 background image */}
+      {/* Background image */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/gta.5.jpg"
@@ -52,39 +50,47 @@ export default function LadescreenPage() {
         draggable={false}
       />
 
-      {/* Vignette overlay */}
+      {/* Vignette */}
       <div
         className="absolute inset-0"
-        style={{
-          background: "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 100%)",
-        }}
+        style={{ background: "radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.6) 100%)" }}
       />
 
-      {/* Bottom dark gradient */}
+      {/* Bottom gradient — taller on mobile so text is always readable */}
       <div
         className="absolute inset-x-0 bottom-0"
         style={{
-          height: "35%",
-          background: "linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.85) 40%, transparent 100%)",
+          height: "clamp(140px, 40%, 280px)",
+          background: "linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 50%, transparent 100%)",
         }}
       />
 
-      {/* Bottom info area */}
-      <div className="absolute inset-x-0 bottom-0 px-8 pb-2">
-
+      {/* Bottom info */}
+      <div
+        className="absolute inset-x-0 bottom-0"
+        style={{ padding: "0 clamp(16px, 5vw, 40px) clamp(6px, 2vh, 14px)" }}
+      >
         {/* Tip + percentage row */}
-        <div className="flex items-end justify-between mb-3 gap-8">
-          {/* Tip text */}
-          <div style={{ maxWidth: "65%" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: "clamp(12px, 4vw, 32px)",
+            marginBottom: "clamp(8px, 1.5vh, 14px)",
+          }}
+        >
+          {/* Tip */}
+          <div style={{ flex: 1, minWidth: 0 }}>
             <p
               style={{
                 color: "rgba(255,255,255,0.45)",
-                fontSize: "11px",
+                fontSize: "clamp(9px, 1.8vw, 11px)",
                 fontFamily: "Arial, sans-serif",
                 fontWeight: 400,
-                letterSpacing: "0.04em",
+                letterSpacing: "0.06em",
                 textTransform: "uppercase",
-                marginBottom: "3px",
+                marginBottom: "4px",
               }}
             >
               TIPP
@@ -92,11 +98,12 @@ export default function LadescreenPage() {
             <p
               style={{
                 color: "rgba(255,255,255,0.85)",
-                fontSize: "13px",
+                fontSize: "clamp(11px, 2.2vw, 14px)",
                 fontFamily: "Arial, sans-serif",
                 fontWeight: 400,
-                lineHeight: 1.45,
+                lineHeight: 1.5,
                 letterSpacing: "0.01em",
+                overflowWrap: "break-word",
               }}
             >
               {tip}
@@ -105,10 +112,10 @@ export default function LadescreenPage() {
 
           {/* Percentage */}
           <div style={{ textAlign: "right", flexShrink: 0 }}>
-            <span
+            <div
               style={{
                 color: "rgba(255,255,255,0.9)",
-                fontSize: "28px",
+                fontSize: "clamp(22px, 5vw, 32px)",
                 fontFamily: "'Arial Black', Arial, sans-serif",
                 fontWeight: 900,
                 letterSpacing: "-0.02em",
@@ -116,16 +123,24 @@ export default function LadescreenPage() {
               }}
             >
               {Math.floor(progress)}
-              <span style={{ fontSize: "16px", fontWeight: 700, color: "rgba(255,255,255,0.6)" }}>%</span>
-            </span>
+              <span
+                style={{
+                  fontSize: "clamp(13px, 2.5vw, 18px)",
+                  fontWeight: 700,
+                  color: "rgba(255,255,255,0.6)",
+                }}
+              >
+                %
+              </span>
+            </div>
             <p
               style={{
                 color: "rgba(255,255,255,0.4)",
-                fontSize: "10px",
+                fontSize: "clamp(8px, 1.5vw, 10px)",
                 fontFamily: "Arial, sans-serif",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
-                marginTop: "2px",
+                marginTop: "3px",
               }}
             >
               LADEN
@@ -133,17 +148,16 @@ export default function LadescreenPage() {
           </div>
         </div>
 
-        {/* GTA5-style loading bar – very thin, at the very bottom */}
+        {/* Loading bar */}
         <div
           style={{
             width: "100%",
-            height: "3px",
+            height: "clamp(2px, 0.4vh, 4px)",
             background: "rgba(255,255,255,0.12)",
             position: "relative",
             overflow: "hidden",
           }}
         >
-          {/* Fill */}
           <div
             style={{
               position: "absolute",
@@ -153,7 +167,6 @@ export default function LadescreenPage() {
               transition: "right 0.05s linear",
             }}
           />
-          {/* Shimmer */}
           <div
             style={{
               position: "absolute",
@@ -167,12 +180,14 @@ export default function LadescreenPage() {
         </div>
       </div>
 
-      {/* Top-left: "Klasse 9a" watermark */}
+      {/* Top-left watermark */}
       <div
-        className="absolute top-6 left-8"
         style={{
+          position: "absolute",
+          top: "clamp(16px, 3vh, 28px)",
+          left: "clamp(16px, 5vw, 36px)",
           color: "rgba(255,255,255,0.25)",
-          fontSize: "12px",
+          fontSize: "clamp(9px, 1.8vw, 13px)",
           fontFamily: "'Arial Black', Arial, sans-serif",
           fontWeight: 900,
           letterSpacing: "0.18em",
@@ -187,6 +202,7 @@ export default function LadescreenPage() {
           0%   { background-position: -60px 0; }
           100% { background-position: 60px 0; }
         }
+        * { -webkit-tap-highlight-color: transparent; }
       `}</style>
     </div>
   );
