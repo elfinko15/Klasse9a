@@ -13,13 +13,18 @@ const TIPS = [
   "Wir vergessen euch nie – auch nicht nach der 9. Klasse.",
 ];
 
-const DURATION = 6000;
+const IMAGES = ["/gta.5.jpg", "/gta.5.2.jpg"];
+const DURATION = 7000;
+const SWITCH_AT = 0.5; // switch image at 50% progress
 
 export default function LadescreenPage() {
   const router = useRouter();
   const [progress, setProgress] = useState(0);
-  const [tip] = useState(() => TIPS[Math.floor(Math.random() * TIPS.length)]);
+  const [imgIndex, setImgIndex] = useState(0);
+  const [fading, setFading] = useState(false);
+  const [tip, setTip] = useState(() => TIPS[Math.floor(Math.random() * TIPS.length)]);
   const startRef = useRef<number>(0);
+  const switchedRef = useRef(false);
 
   useEffect(() => {
     startRef.current = Date.now();
@@ -27,6 +32,18 @@ export default function LadescreenPage() {
       const elapsed = Date.now() - startRef.current;
       const pct = Math.min((elapsed / DURATION) * 100, 100);
       setProgress(pct);
+
+      // Switch image at SWITCH_AT
+      if (pct / 100 >= SWITCH_AT && !switchedRef.current) {
+        switchedRef.current = true;
+        setFading(true);
+        setTimeout(() => {
+          setImgIndex(1);
+          setTip(TIPS[Math.floor(Math.random() * TIPS.length)]);
+          setFading(false);
+        }, 400);
+      }
+
       if (pct >= 100) {
         clearInterval(interval);
         setTimeout(() => router.replace("/schueler"), 80);
@@ -40,15 +57,23 @@ export default function LadescreenPage() {
       className="fixed inset-0 overflow-hidden select-none"
       style={{ background: "#000", fontFamily: "'Arial Black', 'Arial', sans-serif" }}
     >
-      {/* Background image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/gta.5.jpg"
-        alt=""
-        className="absolute inset-0 w-full h-full"
-        style={{ objectFit: "cover", objectPosition: "center top" }}
-        draggable={false}
-      />
+      {/* Background images — cross-fade between them */}
+      {IMAGES.map((src, i) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={src}
+          src={src}
+          alt=""
+          className="absolute inset-0 w-full h-full"
+          style={{
+            objectFit: "cover",
+            objectPosition: "center top",
+            opacity: imgIndex === i ? (fading ? 0 : 1) : fading && i === imgIndex + 1 - 1 ? 1 : 0,
+            transition: "opacity 0.4s ease",
+          }}
+          draggable={false}
+        />
+      ))}
 
       {/* Vignette */}
       <div
@@ -56,7 +81,7 @@ export default function LadescreenPage() {
         style={{ background: "radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.6) 100%)" }}
       />
 
-      {/* Bottom gradient — taller on mobile so text is always readable */}
+      {/* Bottom gradient */}
       <div
         className="absolute inset-x-0 bottom-0"
         style={{
@@ -70,7 +95,7 @@ export default function LadescreenPage() {
         className="absolute inset-x-0 bottom-0"
         style={{ padding: "0 clamp(16px, 5vw, 40px) clamp(6px, 2vh, 14px)" }}
       >
-        {/* Tip + percentage row */}
+        {/* Tip + percentage */}
         <div
           style={{
             display: "flex",
@@ -81,7 +106,14 @@ export default function LadescreenPage() {
           }}
         >
           {/* Tip */}
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              opacity: fading ? 0 : 1,
+              transition: "opacity 0.4s ease",
+            }}
+          >
             <p
               style={{
                 color: "rgba(255,255,255,0.45)",
@@ -123,13 +155,7 @@ export default function LadescreenPage() {
               }}
             >
               {Math.floor(progress)}
-              <span
-                style={{
-                  fontSize: "clamp(13px, 2.5vw, 18px)",
-                  fontWeight: 700,
-                  color: "rgba(255,255,255,0.6)",
-                }}
-              >
+              <span style={{ fontSize: "clamp(13px, 2.5vw, 18px)", fontWeight: 700, color: "rgba(255,255,255,0.6)" }}>
                 %
               </span>
             </div>
@@ -180,7 +206,7 @@ export default function LadescreenPage() {
         </div>
       </div>
 
-      {/* Top-left watermark */}
+      {/* Watermark */}
       <div
         style={{
           position: "absolute",
